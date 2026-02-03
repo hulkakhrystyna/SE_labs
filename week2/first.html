@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Changing Web Page!</title>
+    <script src="script1.js"></script>
+</head>
+<body>
+    <script>
+        document.write('<br>' + "Variables in JavaScript are declared with the var keyword.")
+    </script>
+    <p>JavaScript has many similarities to Python. It is an interpreted language (you don’t have to compile code) and it is dynamically typed (variables can change type). As such, many of ideas you know from Python will work in JavaScript. Let us look at various elements in JavaScript here as a reference point.</p>
+    <script>
+        document.write("As Python and any imperative language, JavaScript statements are executed in order." + '<br>')
+        var name = "Khrystyna";  // string type
+        var age = 19;  //Number type
+        var student = true; // Boolean type: Notice all lowercase true
+        document.write('Name: ' + name + '<br>');  // + is used for string concatentation
+        document.write('Age: ' + age + '<br>');  // Try using + with another number and see what happens!
+        document.write('Is student? ' + student);
+        console.log(name);
+    </script>
+    <h1>page heading</h1>
+    <div id="content"></div>
+    <script>
+        document.getElementById("content").innerHTML = name;
+        document.getElementsByTagName("h1")[0].innerHTML = name;
+    </script>
+</body>
+</html>
