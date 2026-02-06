@@ -12,7 +12,45 @@ const db = require('./services/db');
 
 // Create a route for root - /
 app.get("/", function(req, res) {
-    res.send("Hello world!");
+    res.send("Hello, Khrystyna");
+});
+
+// Create a route for roehampton with some logic processing the request string
+app.get("/roehampton", function(req, res) {
+    console.log(req.url)
+    let path = req.url;
+    res.send(path.substring(0,3))
+});
+
+// Create a dynamic route for /hello/<name>, where name is any value provided by user
+// At the end of the URL
+// Responds to a 'GET' request
+app.get("/hello/:name/:id", function(req, res) {
+    const name = req.params.name;
+    const id = req.params.id;
+
+    const html = `
+        <html>
+            <head>
+                <title>Hello</title>
+            </head>
+            <body>
+                <h2>User Details</h2>
+                <table border="1" cellpadding="5">
+                    <tr>
+                        <th>Name</th>
+                        <th>ID</th>
+                    </tr>
+                    <tr>
+                        <td>${name}</td>
+                        <td>${id}</td>
+                    </tr>
+                </table>
+            </body>
+        </html>
+    `;
+
+    res.send(html);
 });
 
 // Create a route for testing the db
@@ -20,6 +58,17 @@ app.get("/db_test", function(req, res) {
     // Assumes a table called test_table exists in your database
     sql = 'select * from test_table';
     db.query(sql).then(results => {
+        console.log(results);
+        res.send(results)
+    });
+});
+
+// Create a route for testing the db
+app.get("/db_test/:id", function(req, res) {
+    const id = req.params.id;
+    // Assumes a table called test_table exists in your database
+    sql = 'select name from test_table where id = ?';
+    db.query(sql, [id]).then(results => {
         console.log(results);
         res.send(results)
     });
