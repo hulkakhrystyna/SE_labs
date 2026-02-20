@@ -53,6 +53,59 @@ app.get("/hello/:name/:id", function(req, res) {
     res.send(html);
 });
 
+app.get("/all_students", function(req,res) {
+    sql = 'select * from Students';
+    db.query(sql).then(results => {
+        console.log(results);
+        res.send(results)
+    });
+})
+
+app.get("/all_students_formatted", function(req,res) {
+    sql = 'select * from Students';
+    var output = '<table border = "1px">';
+    db.query(sql).then(results => {
+        for (var row of results) {
+            output += '<tr>';
+            output += '<td>' + row.id + '</td>';
+            output += '<td>' + '<a href="./single_student/' + row.id + '">' + row.name + '</a>' + '</td>';
+            output += '</tr>';
+        }
+        output += '</table>';
+        res.send(output);
+    });
+})
+
+app.get("/single_student/:id", function(req, res) {
+    var stId = req.params.id;
+    console.log(stId);
+    var stSql = "select s.name as student, ps.name as programme, \
+    ps.id as pcode from Students s \
+    join Student_Programme ps on ps.id = sp.programme \
+    where s.id = ?";
+    var modSql = "select * from Programme_Modules pm \
+    join Modules m on m.code = pm.mpdule \
+    where programme = ?";
+    db.query(stSql, [stId]).then(results => {
+        console.log(results);
+        var pCode = results[0].pcode;
+        output = '';
+        output += '<div><b>Student: </b>' + results[0].student + '</div>';
+        output += '<div><b>Programme: </b>' + results[0].programme + '</div>';
+        db.query(modSql, [pCode]).then(results => {
+            output += '<table border="1px">';
+            for (var row of results) {
+                output += '<tr>';
+                output += '<td>' + row.module + '</td>';
+                output += '<td>' + row.name + '">' + row.name + '</a>' + '</td>';
+                output += '</tr>';
+            }
+            output += '</table>';
+            res.send(output);
+        })
+    })
+})
+
 // Create a route for testing the db
 app.get("/db_test", function(req, res) {
     // Assumes a table called test_table exists in your database
