@@ -4,11 +4,33 @@ const express = require("express");
 // Create express app
 var app = express();
 
+// Use the Pug templating engine
+app.set('view engine', 'pug');
+app.set('views', './app/views');
+
 // Add static files location
 app.use(express.static("static"));
 
 // Get the functions in the db.js file to use
 const db = require('./services/db');
+
+/* Create a route for root
+app.get("/", function(req, res) {
+    res.render("index");
+}); */
+
+/* Create a route for root - /
+app.get("/", function(req, res) {
+    res.render("index", {'title':'My index page', 'heading':'My heading', 'paragraph':'Paragraph xxxxxxx', 'link':'Click'});
+}); */
+
+// Create a route for root - /
+app.get("/", function(req, res) {
+    // Set up an array of data
+    var test_data = ['one', 'two', 'three', 'four'];
+    // Send the array through to the template as a variable called data
+    res.render("index", {'title':'My index page', 'heading':'My heading', 'data':test_data});
+});
 
 // Create a route for root - /
 app.get("/", function(req, res) {
@@ -61,7 +83,7 @@ app.get("/all_students", function(req,res) {
     });
 })
 
-app.get("/all_students_formatted", function(req,res) {
+/*app.get("/all_students_formatted", function(req,res) {
     sql = 'select * from Students';
     var output = '<table border = "1px">';
     db.query(sql).then(results => {
@@ -74,17 +96,28 @@ app.get("/all_students_formatted", function(req,res) {
         output += '</table>';
         res.send(output);
     });
-})
+})*/
 
-app.get("/single_student/:id", function(req, res) {
+// Task 2 display a formatted list of students
+app.get("/all-students-formatted", function(req, res) {
+    var sql = 'select * from Students';
+    db.query(sql).then(results => {
+    	    // Send the results rows to the all-students template
+    	    // The rows will be in a variable called data
+        res.render('all-students', {data: results});
+    });
+});
+
+app.get("/student-single/:id", function(req, res) {
     var stId = req.params.id;
     console.log(stId);
     var stSql = "select s.name as student, ps.name as programme, \
     ps.id as pcode from Students s \
-    join Student_Programme ps on ps.id = sp.programme \
+    join Student_Programme sp on sp.id = s.id \
+    join Programmes ps on ps.id = sp.programme \
     where s.id = ?";
     var modSql = "select * from Programme_Modules pm \
-    join Modules m on m.code = pm.mpdule \
+    join Modules m on m.code = pm.module \
     where programme = ?";
     db.query(stSql, [stId]).then(results => {
         console.log(results);
