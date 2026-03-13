@@ -177,6 +177,9 @@ app.get("/student-single/:id", async function (req, res) {
     // Create a student class with the ID passed
     var student = new Student(stId);
     await student.getStudentName();
+    await student.getStudentProgramme();
+    await student.getStudentModules();
+    console.log(student);
     res.render('student', {student:student});
 });
 
@@ -196,17 +199,19 @@ app.get("/all-programmes", function(req, res) {
 // Single programme page (no formatting or template)
 app.get("/programme-single/:id", async function (req, res) {
     var pCode = req.params.id;
+
     var pSql = "SELECT * FROM Programmes WHERE id = ?";
     var results = await db.query(pSql, [pCode]);
-    //Now call the database for the modules
-    //Why do you think that the word modules is coming in before the name of the programme??
-    var modSql = "SELECT * FROM Programme_Modules pm \
-    JOIN Modules m on m.code = pm.module \
-    WHERE programme = ?";
+
+    var modSql = `
+        SELECT *
+        FROM Programme_Modules pm
+        JOIN Modules m ON m.code = pm.module
+        WHERE pm.programme = ?
+    `;
     var modResults = await db.query(modSql, [pCode]);
-    // String the results together, just for now.  Later we will push this
-    // through the template
-    res.send(JSON.stringify(results) + JSON.stringify(modResults));  
+
+    res.send(JSON.stringify(results) + JSON.stringify(modResults));
 });
 
 // Create a route for testing the db

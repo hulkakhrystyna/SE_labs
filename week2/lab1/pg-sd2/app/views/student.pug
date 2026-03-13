@@ -2,5 +2,13 @@ extends layout
 block content
     h1 Student page for: #{student.name}
     p The ID for the student is: #{student.id}
-    p Later on we will be able to display the programme and modules
+    h2 Programme: #{student.programme.pName} 
+    h2 Modules 
+    table(border=1)
+        for module in student.modules 
+            tr  
+                td #{module.code}
+                td 
+                    a(href='/single-module/' + module.code) #{module.mName}
+
     
