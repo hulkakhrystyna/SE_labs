@@ -11,6 +11,8 @@ app.set('views', './app/views');
 // Add static files location
 app.use(express.static("static"));
 
+app.use(express.urlencoded({ extended: true }));
+
 // Get the functions in the db.js file to use
 const db = require('./services/db');
 
@@ -176,7 +178,7 @@ app.get("/student-single/:id", async function (req, res) {
     var stId = req.params.id;
     // Create a student class with the ID passed
     var student = new Student(stId);
-    await student.getStudentName();
+    await student.getStudentDetails();
     await student.getStudentProgramme();
     await student.getStudentModules();
     console.log(student);
@@ -253,6 +255,22 @@ app.get("/hello/:name", function(req, res) {
     console.log(req.params);
     //  Retrieve the 'name' parameter and use it in a dynamically generated page
     res.send("Hello " + req.params.name);
+});
+
+app.post('/add-note', async function (req, res) {
+    params = req.body;
+    // Adding a try/catch block which will be useful later when we add to the database
+    var student = new Student(params.id);
+    try {
+         await student.addStudentNote(params.note);
+         res.redirect('/student-single/' + params.id);
+        }
+     catch (err) {
+         console.error(`Error while adding note `, err.message);
+     }
+     // Just a little output for now
+     res.redirect('/student-single/' + params.id);
+
 });
 
 // Start server on port 3000
